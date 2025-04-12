@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta con Números - Pequeños Aprendices</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f9ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #4285F4; /* Azul */
+            color: white;
+            padding: 15px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .objetos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .objeto {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
+        .opciones-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .opcion-numero {
+            width: 50px;
+            height: 50px;
+            background-color: #FFC107; /* Amarillo */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .opcion-numero:hover {
+            transform: scale(1.1);
+            background-color: #FFB300;
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+        .correcto {
+            color: #0F9D58; /* Verde */
+        }
+        .incorrecto {
+            color: #DB4437; /* Rojo */
+        }
+        button {
+            background-color: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #3dbeb5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    <header>
+        <h1>Cuenta con Números</h1>
+        
+    </header>
+
+    <!-- Juego -->
+    <div class="juego-container">
+        <div class="instrucciones">
+            ¿Cuántos hay? <span id="contador">0</span>
+        </div>
+        
+        <!-- Objetos a contar -->
+        <div class="objetos-container" id="objetos">
+            <!-- Se generan dinámicamente -->
+        </div>
+        
+        <!-- Opciones de números -->
+        <div class="opciones-container" id="opciones">
+            <!-- Se generan dinámicamente -->
+        </div>
+        
+        <!-- Mensaje de feedback -->
+        <div class="mensaje" id="mensaje"></div>
+        
+        <!-- Botones -->
+        <button onclick="nuevoJuego()">Nuevo Juego</button>
+        <button onclick="window.location.href='index.html'">Más Juegos</button> <!-- Botón para volver al index -->
+    </div>
+
+    <script>
+        // Variables del juego
+        let cantidadObjetos = 0;
+        let respuestaCorrecta = 0;
+
+        // Iniciar juego al cargar la página
+        window.onload = function() {
+            nuevoJuego();
+        };
+
+        // Generar un nuevo juego
+        function nuevoJuego() {
+            const contenedorObjetos = document.getElementById("objetos");
+            const contenedorOpciones = document.getElementById("opciones");
+            const mensaje = document.getElementById("mensaje");
+            
+            // Limpiar contenedores
+            contenedorObjetos.innerHTML = "";
+            contenedorOpciones.innerHTML = "";
+            mensaje.textContent = "";
+            mensaje.className = "mensaje";
+            
+            // Generar cantidad aleatoria de objetos (1 a 5)
+            cantidadObjetos = Math.floor(Math.random() * 5) + 1;
+            document.getElementById("contador").textContent = cantidadObjetos;
+            
+            // Crear objetos (ejemplo: manzanas)
+            for (let i = 0; i < cantidadObjetos; i++) {
+                const objeto = document.createElement("img");
+                objeto.className = "objeto";
+                objeto.src = "https://cdn-icons-png.flaticon.com/512/415/415682.png"; // Imagen de manzana
+                objeto.alt = "Objeto";
+                contenedorObjetos.appendChild(objeto);
+            }
+            
+            // Generar opciones de números (incluyendo la correcta)
+            respuestaCorrecta = Math.floor(Math.random() * 3) + cantidadObjetos - 1;
+            for (let i = 0; i < 3; i++) {
+                const opcion = document.createElement("div");
+                opcion.className = "opcion-numero";
+                opcion.textContent = respuestaCorrecta - 1 + i;
+                opcion.addEventListener("click", () => verificarRespuesta(respuestaCorrecta - 1 + i));
+                contenedorOpciones.appendChild(opcion);
+            }
+        }
+
+        // Verificar respuesta
+        function verificarRespuesta(respuesta) {
+            const mensaje = document.getElementById("mensaje");
+            if (respuesta === cantidadObjetos) {
+                mensaje.textContent = "¡Correcto! 🎉";
+                mensaje.className = "mensaje correcto";
+            } else {
+                mensaje.textContent = "¡Ups! Intenta de nuevo 😊";
+                mensaje.className = "mensaje incorrecto";
+            }
+        }
+    </script>
+</body>
+</html>

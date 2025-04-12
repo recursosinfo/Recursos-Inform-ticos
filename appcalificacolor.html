@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasifica por Color - Pequeños Aprendices</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #E8F5E9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #7E57C2;
+            color: white;
+            padding: 15px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .contenedor-colores {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .canasta {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+        .objetos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .objeto {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            cursor: grab;
+            transition: transform 0.3s;
+        }
+        .objeto:hover {
+            transform: scale(1.1);
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+        .correcto {
+            color: #2E7D32;
+        }
+        button {
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Clasifica por Color</h1>
+        
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            Arrastra cada objeto a su canasta del mismo color
+        </div>
+        
+        <!-- Canastas de colores -->
+        <div class="contenedor-colores">
+            <div class="canasta" style="background-color: #EF5350;" data-color="rojo">Rojo</div>
+            <div class="canasta" style="background-color: #42A5F5;" data-color="azul">Azul</div>
+            <div class="canasta" style="background-color: #66BB6A;" data-color="verde">Verde</div>
+        </div>
+        
+        <!-- Objetos para clasificar -->
+        <div class="objetos-container" id="objetos">
+            <div class="objeto" style="background-color: #EF5350;" data-color="rojo"></div>
+            <div class="objeto" style="background-color: #42A5F5;" data-color="azul"></div>
+            <div class="objeto" style="background-color: #66BB6A;" data-color="verde"></div>
+            <div class="objeto" style="background-color: #EF5350;" data-color="rojo"></div>
+            <div class="objeto" style="background-color: #42A5F5;" data-color="azul"></div>
+            <div class="objeto" style="background-color: #66BB6A;" data-color="verde"></div>
+        </div>
+        
+        <div class="mensaje" id="mensaje"></div>
+        
+        <button onclick="reiniciarJuego()">Jugar otra vez</button>
+        <button onclick="window.location.href='index.html'">Más Juegos</button>
+    </div>
+
+    <script>
+        // Hacer objetos arrastrables
+        const objetos = document.querySelectorAll('.objeto');
+        const canastas = document.querySelectorAll('.canasta');
+        let objetoArrastrado = null;
+        let aciertos = 0;
+
+        objetos.forEach(objeto => {
+            objeto.draggable = true;
+            
+            objeto.addEventListener('dragstart', function(e) {
+                objetoArrastrado = this;
+                setTimeout(() => this.style.opacity = '0.4', 0);
+            });
+            
+            objeto.addEventListener('dragend', function() {
+                this.style.opacity = '1';
+            });
+        });
+
+        canastas.forEach(canasta => {
+            canasta.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(1.1)';
+            });
+            
+            canasta.addEventListener('dragleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            canasta.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(1)';
+                
+                if (objetoArrastrado.dataset.color === this.dataset.color) {
+                    objetoArrastrado.style.visibility = 'hidden';
+                    aciertos++;
+                    
+                    if (aciertos === objetos.length) {
+                        document.getElementById('mensaje').textContent = '¡Muy bien! Todos los objetos están en su lugar 🎉';
+                        document.getElementById('mensaje').className = 'mensaje correcto';
+                    }
+                } else {
+                    document.getElementById('mensaje').textContent = '¡Ups! Ese no es su color. Intenta otra vez 😊';
+                    document.getElementById('mensaje').className = 'mensaje';
+                }
+            });
+        });
+
+        function reiniciarJuego() {
+            objetos.forEach(objeto => {
+                objeto.style.visibility = 'visible';
+            });
+            aciertos = 0;
+            document.getElementById('mensaje').textContent = '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria - Pequeños Aprendices</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #E3F2FD;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #FF9800;
+            color: white;
+            padding: 15px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .tablero {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        .carta {
+            width: 80px;
+            height: 80px;
+            background-color: #FFEB3B;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            transform-style: preserve-3d;
+        }
+        .carta.volteada {
+            background-color: white;
+            transform: rotateY(180deg);
+        }
+        .carta.encontrada {
+            opacity: 0.5;
+            cursor: default;
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+            color: #4CAF50;
+        }
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Juego de Memoria</h1>
+       
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            Encuentra las parejas iguales
+        </div>
+        
+        <div class="tablero" id="tablero"></div>
+        
+        <div class="mensaje" id="mensaje"></div>
+        
+        <button onclick="iniciarJuego()">Reiniciar</button>
+        <button onclick="window.location.href='index.html'">Más Juegos</button>
+    </div>
+
+    <script>
+        // Imágenes simples (emojis o íconos)
+        const imagenes = [
+            '🐶', '🐱', '🐭', '🐹',
+            '🐰', '🦊', '🐻', '🐼'
+        ];
+
+        let cartas = [];
+        let primeraCarta = null;
+        let segundaCarta = null;
+        let bloqueo = false;
+        let parejasEncontradas = 0;
+
+        function iniciarJuego() {
+            // Duplicar y mezclar imágenes
+            cartas = [...imagenes, ...imagenes].sort(() => Math.random() - 0.5);
+            parejasEncontradas = 0;
+            document.getElementById("mensaje").textContent = "";
+            
+            // Crear tablero
+            const tablero = document.getElementById("tablero");
+            tablero.innerHTML = "";
+            
+            cartas.forEach((imagen, index) => {
+                const carta = document.createElement("div");
+                carta.className = "carta";
+                carta.dataset.indice = index;
+                carta.dataset.imagen = imagen;
+                carta.addEventListener("click", voltearCarta);
+                tablero.appendChild(carta);
+            });
+        }
+
+        function voltearCarta() {
+            if (bloqueo || this.classList.contains('volteada') || this.classList.contains('encontrada')) {
+                return;
+            }
+
+            this.classList.add('volteada');
+            this.textContent = this.dataset.imagen;
+
+            if (!primeraCarta) {
+                primeraCarta = this;
+                return;
+            }
+
+            segundaCarta = this;
+            bloqueo = true;
+
+            verificarPareja();
+        }
+
+        function verificarPareja() {
+            if (primeraCarta.dataset.imagen === segundaCarta.dataset.imagen) {
+                primeraCarta.classList.add('encontrada');
+                segundaCarta.classList.add('encontrada');
+                parejasEncontradas++;
+                
+                if (parejasEncontradas === imagenes.length) {
+                    document.getElementById("mensaje").textContent = "¡Ganaste! 🎉";
+                }
+                resetearTurno();
+            } else {
+                setTimeout(() => {
+                    primeraCarta.classList.remove('volteada');
+                    segundaCarta.classList.remove('volteada');
+                    primeraCarta.textContent = "";
+                    segundaCarta.textContent = "";
+                    resetearTurno();
+                }, 1000);
+            }
+        }
+
+        function resetearTurno() {
+            primeraCarta = null;
+            segundaCarta = null;
+            bloqueo = false;
+        }
+
+        // Iniciar juego al cargar
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>

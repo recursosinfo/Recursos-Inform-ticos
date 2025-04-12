@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rompecabezas - Pequeños Aprendices</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #E1F5FE;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            user-select: none;
+        }
+        header {
+            background-color: #FF5722;
+            color: white;
+            padding: 15px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .imagen-completa {
+            width: 300px;
+            height: 200px;
+            margin: 10px auto;
+            border: 3px dashed #FF9800;
+            background-size: cover;
+            background-position: center;
+        }
+        .tablero {
+            width: 300px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .pieza {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-size: 300px 200px;
+            border: 2px solid #2196F3;
+            cursor: move;
+            transition: transform 0.2s;
+        }
+        .pieza:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+            color: #4CAF50;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #388E3C;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Rompecabezas Divertido</h1>
+       
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            Arma el rompecabezas del animalito:
+        </div>
+        
+        <!-- Imagen completa de referencia -->
+        <div class="imagen-completa" id="imagen-referencia" 
+             style="background-image: url('https://cdn-icons-png.flaticon.com/512/616/616408.png')"></div>
+        
+        <!-- Tablero para las piezas -->
+        <div class="tablero" id="tablero"></div>
+        
+        <div class="mensaje" id="mensaje"></div>
+        
+        <button onclick="iniciarJuego()">Nuevo Rompecabezas</button>
+        <button onclick="window.location.href='index.html'">Más Juegos</button>
+    </div>
+
+    <script>
+        // Configuración del rompecabezas (3x2 piezas)
+        const config = {
+            filas: 2,
+            columnas: 3,
+            anchoPieza: 100,
+            altoPieza: 100
+        };
+
+        let piezas = [];
+        let imagenActual = "https://cdn-icons-png.flaticon.com/512/616/616408.png"; // Imagen de un zorro
+
+        function iniciarJuego() {
+            const tablero = document.getElementById("tablero");
+            tablero.innerHTML = "";
+            document.getElementById("mensaje").textContent = "";
+            
+            // Crear piezas mezcladas
+            piezas = [];
+            for (let fila = 0; fila < config.filas; fila++) {
+                for (let col = 0; col < config.columnas; col++) {
+                    piezas.push({
+                        filaCorrecta: fila,
+                        colCorrecta: col,
+                        filaActual: Math.floor(Math.random() * config.filas),
+                        colActual: Math.floor(Math.random() * config.columnas)
+                    });
+                }
+            }
+            
+            // Mostrar piezas en posiciones aleatorias
+            piezas.forEach((pieza, index) => {
+                const elemento = document.createElement("div");
+                elemento.className = "pieza";
+                elemento.dataset.indice = index;
+                
+                // Posición de fondo para mostrar la parte correcta de la imagen
+                const posX = -pieza.colCorrecta * config.anchoPieza;
+                const posY = -pieza.filaCorrecta * config.altoPieza;
+                elemento.style.backgroundImage = `url('${imagenActual}')`;
+                elemento.style.backgroundPosition = `${posX}px ${posY}px`;
+                
+                // Posición aleatoria inicial en el tablero
+                const left = 50 + Math.random() * 150;
+                const top = 30 + Math.random() * 100;
+                elemento.style.left = `${left}px`;
+                elemento.style.top = `${top}px`;
+                
+                // Hacer arrastrable
+                elemento.draggable = true;
+                elemento.addEventListener('dragstart', arrastrar);
+                tablero.addEventListener('dragover', permitirSoltar);
+                tablero.addEventListener('drop', soltar);
+                
+                tablero.appendChild(elemento);
+            });
+        }
+
+        // Funciones para arrastrar y soltar
+        function arrastrar(e) {
+            e.dataTransfer.setData("text/plain", e.target.dataset.indice);
+        }
+
+        function permitirSoltar(e) {
+            e.preventDefault();
+        }
+
+        function soltar(e) {
+            e.preventDefault();
+            const indice = e.dataTransfer.getData("text/plain");
+            const pieza = document.querySelector(`[data-indice="${indice}"]`);
+            
+            // Actualizar posición de la pieza
+            const rect = e.currentTarget.getBoundingClientRect();
+            pieza.style.left = `${e.clientX - rect.left - config.anchoPieza/2}px`;
+            pieza.style.top = `${e.clientY - rect.top - config.altoPieza/2}px`;
+            
+            verificarCompletado();
+        }
+
+        function verificarCompletado() {
+            const todasPiezas = document.querySelectorAll('.pieza');
+            let completado = true;
+            
+            todasPiezas.forEach(pieza => {
+                const rect = pieza.getBoundingClientRect();
+                const tableroRect = document.getElementById('tablero').getBoundingClientRect();
+                
+                const col = Math.round((rect.left - tableroRect.left) / config.anchoPieza);
+                const fila = Math.round((rect.top - tableroRect.top) / config.altoPieza);
+                
+                if (col !== parseInt(pieza.dataset.colCorrecta) || fila !== parseInt(pieza.dataset.filaCorrecta)) {
+                    completado = false;
+                }
+            });
+            
+            if (completado) {
+                document.getElementById("mensaje").textContent = "¡Lo lograste! 🎉";
+                // Bloquear piezas
+                todasPiezas.forEach(pieza => {
+                    pieza.style.border = "3px solid #4CAF50";
+                    pieza.draggable = false;
+                });
+            }
+        }
+
+        // Iniciar juego al cargar
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>

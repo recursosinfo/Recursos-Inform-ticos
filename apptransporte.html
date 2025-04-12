@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportes Mágicos</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #E3F2FD;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .juego-container {
+            margin: 15px auto;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .escenarios {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            height: 120px;
+        }
+        
+        .escenario {
+            width: 30%;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #cielo {
+            background-color: #81D4FA;
+            border: 3px dashed #0288D1;
+        }
+        
+        #tierra {
+            background-color: #D7CCC8;
+            border: 3px dashed #5D4037;
+        }
+        
+        #agua {
+            background-color: #80DEEA;
+            border: 3px dashed #00838F;
+        }
+        
+        .transportes-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .transporte {
+            font-size: 40px;
+            cursor: grab;
+            padding: 10px;
+            background-color: #FFECB3;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        
+        .transporte:hover {
+            transform: scale(1.1);
+        }
+        
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+        
+        .botones-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        #reiniciar {
+            background-color: #FF9800;
+        }
+        
+        #mas-juegos {
+            background-color: #2196F3;
+        }
+        
+        .icono-escenario {
+            font-size: 30px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Transportes Mágicos</h1>
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            <h2>¡Lleva cada transporte a su lugar correcto!</h2>
+        </div>
+        
+        <div class="escenarios">
+            <div class="escenario" id="cielo" ondragover="allowDrop(event)" ondrop="drop(event)">
+                <div class="icono-escenario">☁️</div>
+                <p>AIRE</p>
+            </div>
+            <div class="escenario" id="tierra" ondragover="allowDrop(event)" ondrop="drop(event)">
+                <div class="icono-escenario">🛣️</div>
+                <p>TIERRA</p>
+            </div>
+            <div class="escenario" id="agua" ondragover="allowDrop(event)" ondrop="drop(event)">
+                <div class="icono-escenario">🌊</div>
+                <p>AGUA</p>
+            </div>
+        </div>
+        
+        <div class="transportes-container" id="transportes">
+            <!-- Transportes se generarán aquí -->
+        </div>
+        
+        <div class="mensaje" id="mensaje">¡Empieza a jugar!</div>
+        
+        <div class="botones-container">
+            <button id="reiniciar" onclick="reiniciarJuego()">Jugar otra vez</button>
+            <button id="mas-juegos" onclick="window.location.href='index.html'">Más Juegos</button>
+        </div>
+    </div>
+
+    <script>
+        // Transportes y sus categorías
+        const transportes = [
+            { emoji: "✈️", tipo: "cielo", nombre: "avión" },
+            { emoji: "🚁", tipo: "cielo", nombre: "helicóptero" },
+            { emoji: "🚗", tipo: "tierra", nombre: "coche" },
+            { emoji: "🚌", tipo: "tierra", nombre: "autobús" },
+            { emoji: "🚲", tipo: "tierra", nombre: "bicicleta" },
+            { emoji: "⛵", tipo: "agua", nombre: "velero" },
+            { emoji: "🚤", tipo: "agua", nombre: "lancha" },
+            { emoji: "🛳️", tipo: "agua", nombre: "barco" }
+        ];
+
+        let transportesColocados = 0;
+        const mensaje = document.getElementById("mensaje");
+        const transportesContainer = document.getElementById("transportes");
+
+        // Inicializar juego
+        function iniciarJuego() {
+            transportesColocados = 0;
+            transportesContainer.innerHTML = "";
+            
+            // Mezclar transportes
+            const transportesMezclados = [...transportes].sort(() => Math.random() - 0.5);
+            
+            // Crear elementos arrastrables
+            transportesMezclados.forEach(transporte => {
+                const elemento = document.createElement("div");
+                elemento.className = "transporte";
+                elemento.draggable = true;
+                elemento.dataset.tipo = transporte.tipo;
+                elemento.dataset.nombre = transporte.nombre;
+                elemento.innerHTML = transporte.emoji;
+                elemento.id = `transporte-${Math.random().toString(36).substr(2, 9)}`;
+                elemento.addEventListener("dragstart", drag);
+                transportesContainer.appendChild(elemento);
+            });
+            
+            mensaje.textContent = "Arrastra cada transporte a su lugar";
+        }
+
+        // Funciones para arrastrar y soltar
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const transporte = document.getElementById(data);
+            const tipoCorrecto = transporte.dataset.tipo;
+            const escenario = ev.target.closest(".escenario").id;
+            
+            if (tipoCorrecto === escenario) {
+                ev.target.appendChild(transporte);
+                transporte.style.cursor = "default";
+                transporte.draggable = false;
+                transporte.style.backgroundColor = "#C8E6C9";
+                transportesColocados++;
+                
+                // Efecto visual
+                transporte.style.transform = "scale(1.2)";
+                setTimeout(() => {
+                    transporte.style.transform = "scale(1)";
+                }, 300);
+                
+                // Mensajes positivos aleatorios
+                const mensajes = ["¡Muy bien!", "¡Correcto!", "¡Genial!", "¡Lo lograste!"];
+                mensaje.textContent = mensajes[Math.floor(Math.random() * mensajes.length)];
+                
+                // Verificar si terminó
+                if (transportesColocados === transportes.length) {
+                    mensaje.textContent = "¡Felicidades! Todos los transportes están en su lugar 🎉";
+                    confeti();
+                }
+            } else {
+                mensaje.textContent = "Ups, ese transporte no va ahí. ¡Intenta otra vez!";
+                transporte.style.transform = "translateX(10px)";
+                setTimeout(() => {
+                    transporte.style.transform = "translateX(-10px)";
+                    setTimeout(() => {
+                        transporte.style.transform = "translateX(0)";
+                    }, 100);
+                }, 100);
+            }
+        }
+
+        // Efecto de confeti al ganar
+        function confeti() {
+            const colores = ["#FF5252", "#FFEB3B", "#4CAF50", "#2196F3", "#9C27B0"];
+            for (let i = 0; i < 50; i++) {
+                const confeti = document.createElement("div");
+                confeti.style.position = "fixed";
+                confeti.style.width = "10px";
+                confeti.style.height = "10px";
+                confeti.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                confeti.style.left = `${Math.random() * 100}vw`;
+                confeti.style.top = "-10px";
+                confeti.style.borderRadius = "50%";
+                confeti.style.animation = `caer ${Math.random() * 2 + 1}s linear forwards`;
+                document.body.appendChild(confeti);
+                
+                setTimeout(() => {
+                    confeti.remove();
+                }, 3000);
+            }
+            
+            // Crear regla de animación dinámica
+            const style = document.createElement("style");
+            style.innerHTML = `
+                @keyframes caer {
+                    to {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function reiniciarJuego() {
+            document.querySelectorAll(".escenario").forEach(escenario => {
+                escenario.innerHTML = `
+                    <div class="icono-escenario">${
+                        escenario.id === "cielo" ? "☁️" : 
+                        escenario.id === "tierra" ? "🛣️" : "🌊"
+                    }</div>
+                    <p>${escenario.id.toUpperCase()}</p>
+                `;
+            });
+            iniciarJuego();
+        }
+
+        // Iniciar juego al cargar
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>

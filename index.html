@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pequeños Aprendices - Juegos Educativos</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f9ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 20px;
+        }
+        .juegos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .juego {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .juego:hover {
+            transform: scale(1.05);
+        }
+        .juego img {
+            width: 80px;
+            height: 80px;
+        }
+        .acerca-de {
+            background-color: white;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .acerca-de h2 {
+            color: #ff6b6b;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 10px;
+        }
+        footer {
+            background-color: #4ecdc4;
+            color: white;
+            padding: 10px;
+            width: 100%;
+        }
+        .estudiantes {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    <header>
+        <h1>¡Aprende Jugando!</h1>
+        <img src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png" alt="Logo" width="100">
+    </header>
+
+    <!-- Contenedor de Juegos -->
+    <div class="juegos-container">
+        <!-- Juego 1: Colores -->
+        <div class="juego" onclick="window.location.href='appcolores.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/2322/2322035.png" alt="Colores">
+            <h3>Aprende los Colores</h3>
+        </div>
+
+        <!-- Juego 2: Números -->
+        <div class="juego" onclick="window.location.href='appnumeros.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/3749/3749784.png" alt="Números">
+            <h3>Cuenta con Números</h3>
+        </div>
+
+        <!-- Juego 3: Letras -->
+        <div class="juego" onclick="window.location.href='appvocales.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/3209/3209261.png" alt="Letras">
+            <h3>Vocales Mágicas</h3>
+        </div>
+
+        <!-- Juego 4: Formas -->
+        <div class="juego" onclick="window.location.href='appformas.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/3347/3347950.png" alt="Formas">
+            <h3>Formas Divertidas</h3>
+        </div>
+
+        <!-- Juego 5: Animales -->
+        <div class="juego" onclick="window.location.href='appbuscaeligual.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/7894/7894853.png" alt="Animales">
+            <h3>Busca el Igual</h3>
+        </div>
+
+        <!-- Juego 6: Memoria -->
+        <div class="juego" onclick="window.location.href='appmemoria.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/3348/3348187.png" alt="Memoria">
+            <h3>Juego de Memoria</h3>
+        </div>
+
+        <!-- Juego 7: Rompecabezas -->
+        <div class="juego" onclick="window.location.href='apprompecabezas.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/921/921490.png" alt="Rompecabezas">
+            <h3>Rompecabezas</h3>
+        </div>
+
+        <!-- Juego 8: Clasificar -->
+        <div class="juego" onclick="window.location.href='appcalificacolor.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Clasificar">
+            <h3>Clasifica por Color</h3>
+        </div>
+
+        <!-- Juego 9: Transportes -->
+        <div class="juego" onclick="window.location.href='apptransporte.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/5161/5161439.png" alt="Transportes">
+            <h3>Transportes Mágicos</h3>
+        </div>
+
+        <!-- Juego 10: Animales -->
+        <div class="juego" onclick="window.location.href='appalimenta.html'">
+            <img src="https://cdn-icons-png.flaticon.com/512/3069/3069172.png" alt="Animales">
+            <h3>Alimenta los Animales</h3>
+        </div>
+    </div>
+
+    <!-- Sección Acerca de -->
+    <div class="acerca-de">
+        <h2>Bienvenidos a Nuestra Página de Juegos para la Primera Infancia 🌈</h2>
+        <p>Esta plataforma ha sido diseñada como una herramienta educativa e interactiva dirigida a niños y niñas en su etapa inicial de desarrollo. A través de actividades lúdicas y coloridas, buscamos estimular el aprendizaje de forma divertida y significativa.</p>
+        
+        <h2>Objetivo </h2>
+        <p>Estos juegos han sido desarrollados para estimular el desarrollo cognitivo, motriz y lingüístico de los niños en edad preescolar. Las actividades incluyen temáticas como:</p>
+        <ul>
+            <li>Reconocimiento de colores y formas</li>
+            <li>Aprendizaje de números y letras</li>
+            <li>Desarrollo de memoria y atención</li>
+            <li>Coordinación ojo-mano</li>
+            <li>Clasificación y asociación</li>
+        </ul>
+        <p>Todo presentado de una manera llamativa y dinámica, que invita a la exploración y el juego, favoreciendo el aprendizaje a través de la interacción.</p>
+        
+        <h2>Presentación</h2>
+        <p><strong>Actividad:</strong> Recursos Informáticos</p>
+        <p><strong>Asignatura:</strong> Tecnologías de la Información y Comunicación en la Primera Infancia</p>
+        <p><strong>Programa:</strong> Licenciatura en Educación Infantil</p>
+        <p><strong>Corporación Universitaria Iberoamericana</strong></p>
+        
+        <div class="estudiantes">
+            <p>Estudiantes:</p>
+            <p>Lilia Yazmín Gómez Rincón – ID 100052217</p>
+            <p>Alba Yudid Vera Hernández – ID 100131876</p>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>© 2025 Pequeños Aprendices - Para niños de 2 a 6 años</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formas Divertidas - Pequeños Aprendices</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #FFF9C4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #FF7043;
+            color: white;
+            padding: 15px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .forma-objetivo {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .opciones-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .opcion-forma {
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .opcion-forma:hover {
+            transform: scale(1.1);
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+        .correcto {
+            color: #43A047;
+        }
+        .incorrecto {
+            color: #E53935;
+        }
+        button {
+            background-color: #5C6BC0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Formas Divertidas</h1>
+        
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            Toca la forma que coincide:
+        </div>
+        
+        <!-- Forma objetivo (grande) -->
+        <div class="forma-objetivo" id="forma-objetivo"></div>
+        
+        <!-- Opciones de formas (3 diferentes) -->
+        <div class="opciones-container" id="opciones"></div>
+        
+        <div class="mensaje" id="mensaje"></div>
+        
+        <button onclick="nuevoJuego()">Nueva Forma</button>
+        <button onclick="window.location.href='index.html'">Más Juegos</button>
+    </div>
+
+    <script>
+        // Formas en SVG (círculo, cuadrado, triángulo)
+        const formas = {
+            circulo: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iI0ZGNTI1MiIvPjwvc3ZnPg==",
+            cuadrado: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzQyODVGNCIvPjwvc3ZnPg==",
+            triangulo: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cG9seWdvbiBwb2ludHM9IjUwLDEwIDkwLDkwIDEwLDkwIiBmaWxsPSIjMEY5RDU4Ii8+PC9zdmc+"
+        };
+
+        let formaActual = "";
+
+        function nuevoJuego() {
+            const opcionesContainer = document.getElementById("opciones");
+            const mensaje = document.getElementById("mensaje");
+            
+            // Limpiar
+            opcionesContainer.innerHTML = "";
+            mensaje.textContent = "";
+            
+            // Elegir forma objetivo al azar
+            const formasKeys = Object.keys(formas);
+            formaActual = formasKeys[Math.floor(Math.random() * formasKeys.length)];
+            document.getElementById("forma-objetivo").style.backgroundImage = `url('${formas[formaActual]}')`;
+            
+            // Crear 3 opciones (1 correcta + 2 incorrectas)
+            const opciones = [formaActual];
+            while (opciones.length < 3) {
+                const formaAleatoria = formasKeys[Math.floor(Math.random() * formasKeys.length)];
+                if (!opciones.includes(formaAleatoria)) {
+                    opciones.push(formaAleatoria);
+                }
+            }
+            
+            // Mezclar opciones
+            opciones.sort(() => Math.random() - 0.5);
+            
+            // Mostrar opciones
+            opciones.forEach(forma => {
+                const div = document.createElement("div");
+                div.className = "opcion-forma";
+                div.style.backgroundImage = `url('${formas[forma]}')`;
+                div.addEventListener("click", () => verificarRespuesta(forma));
+                opcionesContainer.appendChild(div);
+            });
+        }
+
+        function verificarRespuesta(respuesta) {
+            const mensaje = document.getElementById("mensaje");
+            if (respuesta === formaActual) {
+                mensaje.textContent = "¡Correcto! 🎉";
+                mensaje.className = "mensaje correcto";
+            } else {
+                mensaje.textContent = "¡Ups! Intenta de nuevo 😊";
+                mensaje.className = "mensaje incorrecto";
+            }
+        }
+
+        // Iniciar al cargar
+        window.onload = nuevoJuego;
+    </script>
+</body>
+</html>

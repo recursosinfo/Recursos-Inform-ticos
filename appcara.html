@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empareja las Partes de la Cara</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #FFF3E0;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #FF9800;
+            color: white;
+            padding: 15px;
+            border-bottom: 5px solid #F57C00;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 20px;
+            margin: 10px 0;
+            color: #5D4037;
+        }
+        .juego-area {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            margin: 20px auto;
+            background-color: #FFF8E1;
+            border: 2px dashed #FFA000;
+            border-radius: 10px;
+            display: flex;
+        }
+        .columna {
+            width: 50%;
+            position: relative;
+        }
+        .parte-cara {
+            position: absolute;
+            font-size: 30px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .parte-cara:hover {
+            transform: scale(1.2);
+        }
+        .linea {
+            position: absolute;
+            height: 3px;
+            transform-origin: 0 0;
+            z-index: 1;
+            background-color: #FF5722;
+        }
+        .linea.correcta {
+            background-color: #4CAF50 !important;
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+        .botones-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #388E3C;
+            transform: scale(1.05);
+        }
+        button.mas-juegos {
+            background-color: #2196F3;
+        }
+        button.mas-juegos:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Empareja las Partes de la Cara</h1>
+        <img src="https://cdn-icons-png.flaticon.com/512/706/706830.png" alt="Cara feliz" width="80">
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            Une cada parte de la izquierda con su pareja a la derecha
+        </div>
+        
+        <div class="juego-area" id="juego-area">
+            <div class="columna" id="columna-izq"></div>
+            <div class="columna" id="columna-der"></div>
+        </div>
+        
+        <div class="mensaje" id="mensaje"></div>
+        
+        <div class="botones-container">
+            <button onclick="reiniciarJuego()">Reiniciar</button>
+            <button class="mas-juegos" onclick="window.location.href='index.html'">Más Juegos</button>
+        </div>
+    </div>
+
+    <script>
+        const columnaIzq = document.getElementById('columna-izq');
+        const columnaDer = document.getElementById('columna-der');
+        const mensaje = document.getElementById('mensaje');
+        
+        // Partes de la cara
+        const partes = ['👀', '👃', '👄', '👂', '👁️'];
+        let primeraParte = null;
+        let lineas = [];
+        let parejasCorrectas = 0;
+
+        // Colocar partes ordenadas
+        function colocarPartes() {
+            // Limpiar columnas
+            columnaIzq.innerHTML = '';
+            columnaDer.innerHTML = '';
+            
+            // Mezclar orden de las partes derechas
+            const partesDer = [...partes].sort(() => Math.random() - 0.5);
+            
+            // Colocar partes izquierdas (orden fijo)
+            partes.forEach((parte, index) => {
+                const elemento = document.createElement('div');
+                elemento.className = 'parte-cara';
+                elemento.textContent = parte;
+                elemento.dataset.parte = parte;
+                elemento.dataset.id = index;
+                elemento.style.top = `${60 + index * 50}px`;
+                elemento.style.left = '50px';
+                elemento.addEventListener('click', seleccionarParte);
+                columnaIzq.appendChild(elemento);
+            });
+            
+            // Colocar partes derechas (orden aleatorio)
+            partesDer.forEach((parte, index) => {
+                const elemento = document.createElement('div');
+                elemento.className = 'parte-cara';
+                elemento.textContent = parte;
+                elemento.dataset.parte = parte;
+                elemento.dataset.id = index;
+                elemento.style.top = `${60 + index * 50}px`;
+                elemento.style.right = '50px';
+                elemento.addEventListener('click', seleccionarParte);
+                columnaDer.appendChild(elemento);
+            });
+        }
+
+        function seleccionarParte(e) {
+            const parte = e.target;
+            
+            if (!primeraParte) {
+                primeraParte = parte;
+                parte.style.border = '2px solid #FF5722';
+                parte.style.borderRadius = '50%';
+                mensaje.textContent = 'Ahora selecciona su pareja al otro lado';
+            } else {
+                // Verificar que no sea la misma parte
+                if (primeraParte === parte) {
+                    mensaje.textContent = '¡Elige una parte del otro lado!';
+                    return;
+                }
+                
+                // Verificar que sea de la columna opuesta
+                const mismaColumna = 
+                    (primeraParte.parentElement === parte.parentElement);
+                
+                if (mismaColumna) {
+                    mensaje.textContent = '¡Debes elegir una parte del otro lado!';
+                    return;
+                }
+                
+                primeraParte.style.border = 'none';
+                
+                // Verificar si es pareja correcta
+                const esCorrecta = (primeraParte.dataset.parte === parte.dataset.parte);
+                
+                dibujarLinea(primeraParte, parte, esCorrecta);
+                
+                if (esCorrecta) {
+                    parejasCorrectas++;
+                    if (parejasCorrectas === partes.length) {
+                        mensaje.textContent = '¡Perfecto! Has emparejado todo correctamente 🎉';
+                    }
+                }
+                
+                primeraParte = null;
+            }
+        }
+
+        function dibujarLinea(parte1, parte2, esCorrecta) {
+            const rect1 = parte1.getBoundingClientRect();
+            const rect2 = parte2.getBoundingClientRect();
+            
+            const juegoAreaRect = document.getElementById('juego-area').getBoundingClientRect();
+            
+            const x1 = rect1.left + rect1.width/2 - juegoAreaRect.left;
+            const y1 = rect1.top + rect1.height/2 - juegoAreaRect.top;
+            const x2 = rect2.left + rect2.width/2 - juegoAreaRect.left;
+            const y2 = rect2.top + rect2.height/2 - juegoAreaRect.top;
+            
+            const distancia = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angulo = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            
+            const linea = document.createElement('div');
+            linea.className = 'linea';
+            if (esCorrecta) linea.classList.add('correcta');
+            
+            linea.style.width = `${distancia}px`;
+            linea.style.left = `${x1}px`;
+            linea.style.top = `${y1}px`;
+            linea.style.transform = `rotate(${angulo}deg)`;
+            
+            document.getElementById('juego-area').appendChild(linea);
+            lineas.push(linea);
+            
+            // Mensaje de retroalimentación
+            const mensajesCorrectos = ['¡Correcto! 👍', '¡Muy bien! 👏', '¡Perfecto! 🌟', '¡Excelente! 😊'];
+            const mensajesIncorrectos = ['¡Ups! Esa no es su pareja', 'Intenta otra vez', 'Sigue intentando', 'Casi lo logras'];
+            
+            mensaje.textContent = esCorrecta 
+                ? mensajesCorrectos[Math.floor(Math.random() * mensajesCorrectos.length)]
+                : mensajesIncorrectos[Math.floor(Math.random() * mensajesIncorrectos.length)];
+        }
+
+        function reiniciarJuego() {
+            // Limpiar líneas
+            lineas.forEach(linea => linea.remove());
+            lineas = [];
+            
+            primeraParte = null;
+            parejasCorrectas = 0;
+            mensaje.textContent = '';
+            
+            // Recolocar partes
+            colocarPartes();
+        }
+
+        // Iniciar juego al cargar
+        window.onload = colocarPartes;
+    </script>
+</body>
+</html>

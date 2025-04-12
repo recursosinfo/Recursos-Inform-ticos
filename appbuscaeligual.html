@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoria del Cuerpo</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #FFF9C4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #FF7043;
+            color: white;
+            padding: 15px;
+            border-bottom: 5px solid #FF5722;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 20px;
+            margin: 10px 0;
+            color: #5D4037;
+        }
+        .tablero {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        .carta {
+            width: 80px;
+            height: 80px;
+            background-color: #81D4FA;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            transform-style: preserve-3d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .carta.volteada {
+            background-color: white;
+            transform: rotateY(180deg);
+        }
+        .carta.encontrada {
+            background-color: #C8E6C9;
+            cursor: default;
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+        .botones-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #66BB6A;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #4CAF50;
+            transform: scale(1.05);
+        }
+        button.mas-juegos {
+            background-color: #42A5F5;
+        }
+        button.mas-juegos:hover {
+            background-color: #1E88E5;
+        }
+        .cara {
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Memoria del Cuerpo</h1>
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            ¡Encuentra las partes iguales del cuerpo!
+        </div>
+        
+        <div class="tablero" id="tablero"></div>
+        
+        <div class="mensaje" id="mensaje"></div>
+        
+        <div class="botones-container">
+            <button onclick="iniciarJuego()">Jugar otra vez</button>
+            <button class="mas-juegos" onclick="window.location.href='index.html'">Más Juegos</button>
+        </div>
+    </div>
+
+    <script>
+        // Imágenes de partes del cuerpo (emojis)
+        const partesCuerpo = [
+            '👀', // ojos
+            '👂', // oreja
+            '👃', // nariz
+            '👄', // boca
+            '✋', // mano
+            '🦶', // pie
+            '💪', // brazo
+            '🦵'  // pierna
+        ];
+
+        let cartas = [];
+        let primeraCarta = null;
+        let segundaCarta = null;
+        let bloqueo = false;
+        let parejasEncontradas = 0;
+
+        function iniciarJuego() {
+            // Duplicar y mezclar imágenes
+            cartas = [...partesCuerpo, ...partesCuerpo].sort(() => Math.random() - 0.5);
+            parejasEncontradas = 0;
+            document.getElementById("mensaje").textContent = "";
+            
+            // Crear tablero
+            const tablero = document.getElementById("tablero");
+            tablero.innerHTML = "";
+            
+            cartas.forEach((parte, index) => {
+                const carta = document.createElement("div");
+                carta.className = "carta";
+                carta.dataset.indice = index;
+                carta.dataset.parte = parte;
+                carta.addEventListener("click", voltearCarta);
+                
+                // Agregar cara frontal (parte del cuerpo)
+                const caraFrontal = document.createElement("div");
+                caraFrontal.className = "cara";
+                caraFrontal.textContent = parte;
+                carta.appendChild(caraFrontal);
+                
+                tablero.appendChild(carta);
+            });
+        }
+
+        function voltearCarta() {
+            if (bloqueo || this.classList.contains('volteada') || this.classList.contains('encontrada')) {
+                return;
+            }
+
+            this.classList.add('volteada');
+
+            if (!primeraCarta) {
+                primeraCarta = this;
+                return;
+            }
+
+            segundaCarta = this;
+            bloqueo = true;
+
+            verificarPareja();
+        }
+
+        function verificarPareja() {
+            if (primeraCarta.dataset.parte === segundaCarta.dataset.parte) {
+                primeraCarta.classList.add('encontrada');
+                segundaCarta.classList.add('encontrada');
+                parejasEncontradas++;
+                
+                // Mensajes de refuerzo positivo
+                const mensajes = [
+                    "¡Muy bien!",
+                    "¡Excelente!",
+                    "¡Lo hiciste genial!",
+                    "¡Eres un campeón!",
+                    "¡Sigue así!"
+                ];
+                
+                if (parejasEncontradas === partesCuerpo.length) {
+                    document.getElementById("mensaje").textContent = "¡Ganaste! 🎉 ¡Conoces bien tu cuerpo!";
+                } else {
+                    document.getElementById("mensaje").textContent = mensajes[Math.floor(Math.random() * mensajes.length)];
+                }
+                
+                resetearTurno();
+            } else {
+                setTimeout(() => {
+                    primeraCarta.classList.remove('volteada');
+                    segundaCarta.classList.remove('volteada');
+                    resetearTurno();
+                }, 1000);
+            }
+        }
+
+        function resetearTurno() {
+            primeraCarta = null;
+            segundaCarta = null;
+            bloqueo = false;
+        }
+
+        // Iniciar juego al cargar
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>

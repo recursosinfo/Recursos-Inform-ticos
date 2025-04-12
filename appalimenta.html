@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alimenta a los Animales</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #E8F5E9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .juego-container {
+            margin: 15px auto;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .animales-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .animal {
+            width: 100px;
+            height: 100px;
+            background-color: #FFECB3;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .alimentos-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .alimento {
+            font-size: 40px;
+            cursor: grab;
+            padding: 10px;
+            background-color: #C8E6C9;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        
+        .alimento:hover {
+            transform: scale(1.1);
+        }
+        
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+        
+        .botones-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        #reiniciar {
+            background-color: #FF9800;
+        }
+        
+        #mas-juegos {
+            background-color: #2196F3;
+        }
+        
+        .correcto {
+            background-color: #A5D6A7 !important;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Alimenta a los Animales</h1>
+    </header>
+
+    <div class="juego-container">
+        <div class="instrucciones">
+            <h2>¡Lleva cada alimento al animal correcto!</h2>
+        </div>
+        
+        <div class="animales-container" id="animales">
+            <!-- Animales se generarán aquí -->
+        </div>
+        
+        <div class="alimentos-container" id="alimentos">
+            <!-- Alimentos se generarán aquí -->
+        </div>
+        
+        <div class="mensaje" id="mensaje">¡Empieza a jugar!</div>
+        
+        <div class="botones-container">
+            <button id="reiniciar" onclick="reiniciarJuego()">Jugar otra vez</button>
+            <button id="mas-juegos" onclick="window.location.href='index.html'">Más Juegos</button>
+        </div>
+    </div>
+
+    <script>
+        // Animales y sus alimentos
+        const animales = [
+            { emoji: "🐄", alimento: "🌾", nombre: "vaca" },
+            { emoji: "🐖", alimento: "🍎", nombre: "cerdo" },
+            { emoji: "🐑", alimento: "🌿", nombre: "oveja" },
+            { emoji: "🐓", alimento: "🌽", nombre: "gallina" },
+            { emoji: "🐇", alimento: "🥕", nombre: "conejo" }
+        ];
+
+        let aciertos = 0;
+        const mensaje = document.getElementById("mensaje");
+        const animalesContainer = document.getElementById("animales");
+        const alimentosContainer = document.getElementById("alimentos");
+
+        // Inicializar juego
+        function iniciarJuego() {
+            aciertos = 0;
+            animalesContainer.innerHTML = "";
+            alimentosContainer.innerHTML = "";
+            
+            // Mezclar animales
+            const animalesMezclados = [...animales].sort(() => Math.random() - 0.5);
+            
+            // Crear animales
+            animalesMezclados.forEach(animal => {
+                const elemento = document.createElement("div");
+                elemento.className = "animal";
+                elemento.dataset.alimento = animal.alimento;
+                elemento.dataset.nombre = animal.nombre;
+                elemento.innerHTML = animal.emoji;
+                elemento.id = `animal-${animal.nombre}`;
+                // Agregar eventos de arrastre
+                elemento.addEventListener("dragover", allowDrop);
+                elemento.addEventListener("drop", drop);
+                animalesContainer.appendChild(elemento);
+            });
+            
+            // Mezclar alimentos
+            const alimentosMezclados = [...animales].sort(() => Math.random() - 0.5);
+            
+            // Crear alimentos arrastrables
+            alimentosMezclados.forEach(animal => {
+                const elemento = document.createElement("div");
+                elemento.className = "alimento";
+                elemento.draggable = true;
+                elemento.dataset.tipo = animal.alimento;
+                elemento.innerHTML = animal.alimento;
+                elemento.id = `alimento-${Math.random().toString(36).substr(2, 9)}`;
+                elemento.addEventListener("dragstart", drag);
+                alimentosContainer.appendChild(elemento);
+            });
+            
+            mensaje.textContent = "Arrastra cada alimento al animal correcto";
+        }
+
+        // Funciones para arrastrar y soltar
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const alimento = document.getElementById(data);
+            const animal = ev.target;
+            
+            if (alimento.dataset.tipo === animal.dataset.alimento) {
+                // Acierto
+                animal.classList.add("correcto");
+                alimento.style.visibility = "hidden";
+                aciertos++;
+                
+                // Mensajes positivos aleatorios
+                const mensajes = ["¡Muy bien!", "¡Correcto!", "¡Genial!", "¡Lo lograste!"];
+                mensaje.textContent = `${mensajes[Math.floor(Math.random() * mensajes.length)]} ${animal.dataset.nombre} come ${alimento.innerHTML}`;
+                
+                // Verificar si terminó
+                if (aciertos === animales.length) {
+                    mensaje.textContent = "¡Felicidades! Todos los animales están alimentados 🎉";
+                    confeti();
+                }
+            } else {
+                // Error
+                mensaje.textContent = "¡Ups! Ese no es su alimento favorito. Intenta otra vez";
+                alimento.style.transform = "translateX(10px)";
+                setTimeout(() => {
+                    alimento.style.transform = "translateX(-10px)";
+                    setTimeout(() => {
+                        alimento.style.transform = "translateX(0)";
+                    }, 100);
+                }, 100);
+            }
+        }
+
+        // Efecto de confeti al ganar
+        function confeti() {
+            const colores = ["#FF5252", "#FFEB3B", "#4CAF50", "#2196F3", "#9C27B0"];
+            for (let i = 0; i < 50; i++) {
+                const confeti = document.createElement("div");
+                confeti.style.position = "fixed";
+                confeti.style.width = "10px";
+                confeti.style.height = "10px";
+                confeti.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                confeti.style.left = `${Math.random() * 100}vw`;
+                confeti.style.top = "-10px";
+                confeti.style.borderRadius = "50%";
+                confeti.style.animation = `caer ${Math.random() * 2 + 1}s linear forwards`;
+                document.body.appendChild(confeti);
+                
+                setTimeout(() => {
+                    confeti.remove();
+                }, 3000);
+            }
+            
+            // Crear regla de animación dinámica
+            const style = document.createElement("style");
+            style.innerHTML = `
+                @keyframes caer {
+                    to {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function reiniciarJuego() {
+            iniciarJuego();
+        }
+
+        // Iniciar juego al cargar
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>

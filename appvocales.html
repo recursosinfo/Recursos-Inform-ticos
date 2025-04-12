@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocales Mágicas - Pequeños Aprendices</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f9ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #FF6B6B; /* Rosado */
+            color: white;
+            padding: 15px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .vocal-grande {
+            font-size: 100px;
+            color: #9C27B0; /* Morado */
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .opciones-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .opcion-vocal {
+            width: 80px;
+            height: 80px;
+            background-color: #4ECDC4; /* Turquesa */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .opcion-vocal:hover {
+            transform: scale(1.1);
+        }
+        .mensaje {
+            font-size: 22px;
+            min-height: 30px;
+            margin: 15px 0;
+        }
+        .correcto {
+            color: #0F9D58; /* Verde */
+        }
+        .incorrecto {
+            color: #DB4437; /* Rojo */
+        }
+        button {
+            background-color: #FFC107; /* Amarillo */
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #FFB300;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    <header>
+        <h1>Vocales Mágicas</h1>
+        
+    </header>
+
+    <!-- Juego -->
+    <div class="juego-container">
+        <div class="instrucciones">
+            Toca la vocal:
+        </div>
+        
+        <!-- Vocal grande (se reproduce al tocarla) -->
+        <div class="vocal-grande" id="vocal-objetivo" onclick="reproducirVocal()">A</div>
+        
+        <!-- Opciones de vocales -->
+        <div class="opciones-container" id="opciones">
+            <!-- Se generan dinámicamente -->
+        </div>
+        
+        <!-- Mensaje de feedback -->
+        <div class="mensaje" id="mensaje"></div>
+        
+        <!-- Botones -->
+        <button onclick="nuevoJuego()">Nueva Vocal</button>
+        <button onclick="window.location.href='index.html'">Más Juegos</button>
+    </div>
+
+    <script>
+        // Vocales y sus sonidos (puedes grabar tus propias voces)
+        const vocales = [
+            { letra: "A", audio: "https://www.soundjay.com/buttons/sounds/button-09.mp3" }, // Reemplaza con audio real
+            { letra: "E", audio: "https://www.soundjay.com/buttons/sounds/button-09.mp3" },
+            { letra: "I", audio: "https://www.soundjay.com/buttons/sounds/button-09.mp3" },
+            { letra: "O", audio: "https://www.soundjay.com/buttons/sounds/button-09.mp3" },
+            { letra: "U", audio: "https://www.soundjay.com/buttons/sounds/button-09.mp3" }
+        ];
+
+        let vocalActual = "";
+        let audioVocal = null;
+
+        // Iniciar juego al cargar
+        window.onload = function() {
+            nuevoJuego();
+        };
+
+        // Generar nuevo juego
+        function nuevoJuego() {
+            const opcionesContainer = document.getElementById("opciones");
+            const mensaje = document.getElementById("mensaje");
+            
+            // Limpiar contenedores
+            opcionesContainer.innerHTML = "";
+            mensaje.textContent = "";
+            mensaje.className = "mensaje";
+            
+            // Seleccionar una vocal al azar
+            vocalActual = vocales[Math.floor(Math.random() * vocales.length)];
+            document.getElementById("vocal-objetivo").textContent = vocalActual.letra;
+            
+            // Crear opciones (mezcladas)
+            const opcionesMezcladas = [...vocales]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3); // 3 opciones (incluyendo la correcta)
+            
+            // Asegurarse de que la vocal actual esté en las opciones
+            if (!opcionesMezcladas.some(v => v.letra === vocalActual.letra)) {
+                opcionesMezcladas[0] = vocalActual;
+            }
+            
+            // Mostrar opciones
+            opcionesMezcladas.forEach(vocal => {
+                const div = document.createElement("div");
+                div.className = "opcion-vocal";
+                div.textContent = vocal.letra;
+                div.addEventListener("click", () => verificarRespuesta(vocal.letra));
+                opcionesContainer.appendChild(div);
+            });
+        }
+
+        // Reproducir sonido de la vocal
+        function reproducirVocal() {
+            if (audioVocal) audioVocal.pause(); // Detener audio anterior
+            audioVocal = new Audio(vocalActual.audio);
+            audioVocal.play();
+        }
+
+        // Verificar respuesta
+        function verificarRespuesta(respuesta) {
+            const mensaje = document.getElementById("mensaje");
+            if (respuesta === vocalActual.letra) {
+                mensaje.textContent = "¡Correcto! 🎉";
+                mensaje.className = "mensaje correcto";
+                // Reproducir sonido de felicitación
+                new Audio("https://www.soundjay.com/buttons/sounds/button-08.mp3").play(); // Reemplaza con audio real
+            } else {
+                mensaje.textContent = "¡Intenta de nuevo! 😊";
+                mensaje.className = "mensaje incorrecto";
+                reproducirVocal(); // Repetir la vocal
+            }
+        }
+    </script>
+</body>
+</html>

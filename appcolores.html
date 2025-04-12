@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pequeños Aprendices - Aprende los Colores</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f9ff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 20px;
+        }
+        .juego-container {
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .instrucciones {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #333;
+        }
+        .objetos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .objeto {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .objeto:hover {
+            transform: scale(1.1);
+        }
+        .mensaje {
+            font-size: 20px;
+            margin: 10px 0;
+            min-height: 30px;
+        }
+        .correcto {
+            color: green;
+        }
+        .incorrecto {
+            color: red;
+        }
+        .botones-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        #reiniciar {
+            background-color: #4ecdc4;
+        }
+        #mas-juegos {
+            background-color: #ff9e7d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    <header>
+        <h1>¡Aprende los Colores!</h1>
+        
+    </header>
+
+    <!-- Juego de Colores -->
+    <div class="juego-container">
+        <div class="instrucciones" id="instruccion">
+            Toca el objeto de color: <span id="color-objetivo">rojo</span>
+        </div>
+        <div class="objetos-container" id="objetos">
+            <!-- Objetos se generarán con JavaScript -->
+        </div>
+        <div class="mensaje" id="mensaje"></div>
+        <div class="botones-container">
+            <button id="reiniciar" onclick="reiniciarJuego()">Jugar de nuevo</button>
+            <button id="mas-juegos" onclick="window.location.href='index.html'">Más Juegos</button>
+        </div>
+    </div>
+
+    <script>
+        // Colores y objetos
+        const colores = {
+            rojo: "#FF5252",
+            azul: "#4285F4",
+            verde: "#0F9D58",
+            amarillo: "#FFC107",
+            morado: "#9C27B0"
+        };
+
+        const objetos = ["manzana", "ballena", "hoja", "sol", "uva"]; // Nombres para mostrar (opcional)
+
+        let colorObjetivo = "";
+        let objetoCorrecto = "";
+
+        // Iniciar juego
+        function iniciarJuego() {
+            const elementos = document.getElementById("objetos");
+            elementos.innerHTML = "";
+            document.getElementById("mensaje").textContent = "";
+
+            // Seleccionar un color al azar
+            const coloresKeys = Object.keys(colores);
+            colorObjetivo = coloresKeys[Math.floor(Math.random() * coloresKeys.length)];
+            document.getElementById("color-objetivo").textContent = colorObjetivo;
+            document.getElementById("color-objetivo").style.color = colores[colorObjetivo];
+
+            // Crear objetos con colores aleatorios (uno correcto)
+            objetoCorrecto = Math.floor(Math.random() * 5); // Posición del objeto correcto
+            for (let i = 0; i < 5; i++) {
+                const objeto = document.createElement("div");
+                objeto.className = "objeto";
+                objeto.style.backgroundColor = i === objetoCorrecto 
+                    ? colores[colorObjetivo] 
+                    : colores[coloresKeys.filter(c => c !== colorObjetivo)[Math.floor(Math.random() * 4)]];
+                
+                objeto.addEventListener("click", () => verificarRespuesta(i));
+                elementos.appendChild(objeto);
+            }
+        }
+
+        // Verificar si el clic es correcto
+        function verificarRespuesta(indice) {
+            const mensaje = document.getElementById("mensaje");
+            if (indice === objetoCorrecto) {
+                mensaje.textContent = "¡Correcto! 🎉";
+                mensaje.className = "mensaje correcto";
+            } else {
+                mensaje.textContent = "¡Ups! Intenta de nuevo 😊";
+                mensaje.className = "mensaje incorrecto";
+            }
+        }
+
+        // Reiniciar juego
+        function reiniciarJuego() {
+            iniciarJuego();
+        }
+
+        // Iniciar al cargar la página
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>
